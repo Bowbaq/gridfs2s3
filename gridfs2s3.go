@@ -91,7 +91,9 @@ func main() {
 				for gfs.OpenNext(files, &f) {
 					path := prefix + "/" + f.Name()
 
-					if _, exists := (*existing)[path]; exists {
+					// Skip if the file exist and is the same as in mongo
+					// ETag includes quotation marks ...
+					if key, exists := (*existing)[path]; exists && key.ETag[1:33] == f.MD5() {
 						log.Println(id, "SKIPPING", path)
 						file_count++
 						continue
